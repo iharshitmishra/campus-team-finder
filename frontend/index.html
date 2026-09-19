@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Campus Hackathon Team Finder | Find Your Squad</title>
+  <link rel="stylesheet" href="/src/style.css">
+</head>
+<body class="bg-canvas text-ink antialiased min-h-screen flex flex-col selection:bg-terracotta selection:text-white">
+
+  <!-- Navigation Bar -->
+  <header class="border-b border-canvas-border bg-canvas/95 backdrop-blur-md sticky top-0 z-30">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      
+      <a href="/index.html" class="flex items-center gap-3 group">
+        <div class="w-9 h-9 rounded-lg bg-terracotta text-white flex items-center justify-center font-heading font-black text-xl shadow-xs">
+          H
+        </div>
+        <div class="flex flex-col">
+          <span class="font-heading font-extrabold text-ink text-lg sm:text-xl leading-tight tracking-tight group-hover:text-terracotta transition-colors">
+            Campus Team Finder
+          </span>
+          <span class="text-[11px] uppercase tracking-wider text-ink-muted font-semibold">
+            Hackathon Collaboration Hub
+          </span>
+        </div>
+      </a>
+
+      <div class="flex items-center gap-6">
+        <nav id="nav-links" class="hidden md:flex items-center gap-6 text-sm font-semibold text-ink-secondary">
+          <a href="/browse-teams.html" class="hover:text-terracotta transition-colors">Browse Teams</a>
+          <a href="#how-it-works" class="hover:text-terracotta transition-colors">How It Works</a>
+          <a href="#hackathons" class="hover:text-terracotta transition-colors">Competitions</a>
+        </nav>
+
+        <div id="nav-auth" class="flex items-center gap-3">
+          <a href="/login.html" class="px-3.5 py-2 text-xs sm:text-sm font-semibold text-ink-secondary hover:text-ink">
+            Sign In
+          </a>
+          <a href="/login.html#register" class="px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold bg-terracotta text-white hover:bg-terracotta-hover transition-colors shadow-xs">
+            Join Campus
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <main class="flex-1">
+    <section class="max-w-6xl mx-auto px-4 sm:px-6 pt-16 pb-20 sm:pt-24 sm:pb-28">
+      <div class="max-w-3xl">
+        <span class="badge-tag uppercase tracking-widest text-terracotta font-mono font-bold px-3 py-1 rounded-md bg-terracotta-light border border-terracotta-border inline-block mb-4 text-xs">
+          Student Developer Network
+        </span>
+
+        <h1 class="font-heading font-black text-ink text-4xl sm:text-6xl tracking-tight leading-[1.1] mb-6">
+          Stop hacking solo. Build high-impact teams across departments.
+        </h1>
+
+        <p class="text-base sm:text-xl text-ink-secondary leading-relaxed mb-8 max-w-2xl font-normal">
+          Connect with student developers, UI/UX designers, and hardware researchers. Post your project vision, review peer pitches, and lock in your roster for Smart India Hackathon, ETHIndia, and campus competitions.
+        </p>
+
+        <div class="flex flex-wrap items-center gap-4">
+          <a href="/browse-teams.html" class="px-7 py-3.5 rounded-lg text-base font-bold bg-terracotta text-white hover:bg-terracotta-hover transition-all shadow-sm hover:shadow">
+            Browse Active Teams →
+          </a>
+          <a id="hero-post-btn" href="/login.html" class="px-6 py-3.5 rounded-lg text-base font-bold border border-canvas-border text-ink bg-canvas-card hover:border-terracotta hover:text-terracotta transition-all">
+            Post a Team Requirement
+          </a>
+        </div>
+      </div>
+
+      <!-- Quick Platform Stats -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-6 mt-16 pt-10 border-t border-canvas-border">
+        <div>
+          <div class="font-heading font-black text-3xl sm:text-4xl text-ink">100%</div>
+          <div class="text-xs font-mono font-bold text-ink-muted uppercase tracking-wider mt-1">Campus Students</div>
+        </div>
+        <div>
+          <div class="font-heading font-black text-3xl sm:text-4xl text-terracotta">3-Step</div>
+          <div class="text-xs font-mono font-bold text-ink-muted uppercase tracking-wider mt-1">Team Formation</div>
+        </div>
+        <div>
+          <div class="font-heading font-black text-3xl sm:text-4xl text-ink">Zero</div>
+          <div class="text-xs font-mono font-bold text-ink-muted uppercase tracking-wider mt-1">Spam Or Friction</div>
+        </div>
+        <div>
+          <div class="font-heading font-black text-3xl sm:text-4xl text-sage">Live</div>
+          <div class="text-xs font-mono font-bold text-ink-muted uppercase tracking-wider mt-1">Roster Tracking</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="bg-canvas-alt py-20 border-y border-canvas-border">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6">
+        <div class="mb-14">
+          <span class="text-xs font-mono uppercase tracking-wider text-terracotta font-bold">
+            Transparent Workflow
+          </span>
+          <h2 class="font-heading font-extrabold text-ink text-3xl sm:text-4xl mt-1">
+            How Hackathon Team Finder Works
+          </h2>
+          <p className="text-sm text-ink-muted mt-2 max-w-xl">
+            A clear student-to-leader interaction where team creators manually review and approve every incoming squad member.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="paper-card rounded-xl p-8">
+            <div class="w-10 h-10 rounded-lg bg-terracotta text-white font-mono font-bold text-sm flex items-center justify-center mb-5 shadow-xs">
+              01
+            </div>
+            <h3 class="font-heading font-bold text-ink text-xl mb-2">
+              Post Your Problem Statement
+            </h3>
+            <p class="text-sm text-ink-secondary leading-relaxed">
+              Define the target hackathon event, target squad capacity (2 to 6 students), and required tech competencies like React, Python, OpenCV, or Solidity.
+            </p>
+          </div>
+
+          <div class="paper-card rounded-xl p-8">
+            <div class="w-10 h-10 rounded-lg bg-terracotta text-white font-mono font-bold text-sm flex items-center justify-center mb-5 shadow-xs">
+              02
+            </div>
+            <h3 class="font-heading font-bold text-ink text-xl mb-2">
+              Pitch Your Background
+            </h3>
+            <p class="text-sm text-ink-secondary leading-relaxed">
+              Browsing students submit a targeted application with their past projects, GitHub links, and department background directly to the team leader.
+            </p>
+          </div>
+
+          <div class="paper-card rounded-xl p-8">
+            <div class="w-10 h-10 rounded-lg bg-terracotta text-white font-mono font-bold text-sm flex items-center justify-center mb-5 shadow-xs">
+              03
+            </div>
+            <h3 class="font-heading font-bold text-ink text-xl mb-2">
+              Manual Leader Review & Roster Lock
+            </h3>
+            <p class="text-sm text-ink-secondary leading-relaxed">
+              The team creator reviews all pitches in their dashboard. When an applicant is accepted, they are added to the roster until the team reaches full capacity.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Hackathons & Squad Playbook Section (Replaced the Mini Project Spec card with high-value content) -->
+    <section id="hackathons" class="max-w-6xl mx-auto px-4 sm:px-6 py-20">
+      <div class="mb-12">
+        <span class="badge-tag uppercase font-bold px-3 py-1 rounded-md bg-ochre-light text-ochre border border-ochre-border text-xs">
+          Campus Competition Guide
+        </span>
+        <h2 class="font-heading font-extrabold text-ink text-3xl sm:text-4xl mt-2 mb-3">
+          Upcoming Hackathons & Ideal Squad Formations
+        </h2>
+        <p class="text-sm sm:text-base text-ink-secondary max-w-2xl leading-relaxed">
+          Winning hackathons requires the right balance of technical depth, product intuition, and presentation skills.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Hackathon 1 -->
+        <div class="paper-card rounded-xl p-7 border border-canvas-border">
+          <span class="badge-tag uppercase font-bold text-xs text-terracotta bg-terracotta-light px-2.5 py-1 rounded border border-terracotta-border inline-block mb-3">
+            National Flagship
+          </span>
+          <h3 class="font-heading font-bold text-xl text-ink mb-2">
+            Smart India Hackathon (SIH)
+          </h3>
+          <p class="text-xs text-ink-muted mb-4 font-mono font-semibold">
+            Squad Size: 6 Members • Hardware & Software Tracks
+          </p>
+          <p class="text-sm text-ink-secondary leading-relaxed mb-4">
+            Tackles ministry and public-sector problem statements. Requires robust system architecture and multidisciplinary breadth.
+          </p>
+          <div class="pt-4 border-t border-canvas-border text-xs text-ink-secondary space-y-1.5 font-medium">
+            <div>🎯 <strong>2 Fullstack Engineers</strong> (APIs & UI)</div>
+            <div>🎯 <strong>1 ML / Hardware Dev</strong> (Model/Sensors)</div>
+            <div>🎯 <strong>1 DevOps & DB Lead</strong> (Cloud/Docker)</div>
+            <div>🎯 <strong>1 Product & Presentation Lead</strong></div>
+          </div>
+        </div>
+
+        <!-- Hackathon 2 -->
+        <div class="paper-card rounded-xl p-7 border border-canvas-border">
+          <span class="badge-tag uppercase font-bold text-xs text-ochre bg-ochre-light px-2.5 py-1 rounded border border-ochre-border inline-block mb-3">
+            Web3 & Crypto
+          </span>
+          <h3 class="font-heading font-bold text-xl text-ink mb-2">
+            ETHIndia & Web3 Hackathons
+          </h3>
+          <p class="text-xs text-ink-muted mb-4 font-mono font-semibold">
+            Squad Size: 3–4 Members • Smart Contracts & dApps
+          </p>
+          <p class="text-sm text-ink-secondary leading-relaxed mb-4">
+            Fast 36-hour sprint building decentralized protocols, NFT utility, DeFi primitives, or zero-knowledge proof tooling.
+          </p>
+          <div class="pt-4 border-t border-canvas-border text-xs text-ink-secondary space-y-1.5 font-medium">
+            <div>🎯 <strong>1 Smart Contract Dev</strong> (Solidity/Foundry)</div>
+            <div>🎯 <strong>1 Frontend Dev</strong> (Next.js & Wagmi)</div>
+            <div>🎯 <strong>1 Designer & Pitch Lead</strong> (UI/UX)</div>
+          </div>
+        </div>
+
+        <!-- Hackathon 3 -->
+        <div class="paper-card rounded-xl p-7 border border-canvas-border">
+          <span class="badge-tag uppercase font-bold text-xs text-sage bg-sage-light px-2.5 py-1 rounded border border-sage-border inline-block mb-3">
+            Inter-College Sprint
+          </span>
+          <h3 class="font-heading font-bold text-xl text-ink mb-2">
+            Campus Annual CodeFest
+          </h3>
+          <p class="text-xs text-ink-muted mb-4 font-mono font-semibold">
+            Squad Size: 2–4 Members • Rapid Prototyping
+          </p>
+          <p class="text-sm text-ink-secondary leading-relaxed mb-4">
+            High-speed hack focused on solving immediate campus challenges: transit trackers, canteen budget bots, and student tools.
+          </p>
+          <div class="pt-4 border-t border-canvas-border text-xs text-ink-secondary space-y-1.5 font-medium">
+            <div>🎯 <strong>1 Rapid Prototyper</strong> (FastAPI/Node)</div>
+            <div>🎯 <strong>1 Mobile / Web Dev</strong> (React/Flutter)</div>
+            <div>🎯 <strong>1 Creative Presenter</strong></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer (Clean campus footer, no Vexoria or mini proj references) -->
+  <footer class="border-t border-canvas-border py-10 bg-canvas-alt text-center text-xs sm:text-sm text-ink-muted">
+    <div class="max-w-6xl mx-auto px-4">
+      <p class="font-bold text-ink mb-1 text-base">Campus Hackathon Team Finder</p>
+      <p class="text-ink-secondary">Built by students, for students • Connect across departments, build winning squads, and ship real projects.</p>
+    </div>
+  </footer>
+
+  <script>
+    (function() {
+      try {
+        const userRaw = localStorage.getItem('htf_user');
+        const token = localStorage.getItem('htf_token');
+        if (userRaw && token) {
+          const user = JSON.parse(userRaw);
+          const displayName = user.name ? user.name.split(' ')[0] : 'Student';
+          const initial = user.name ? user.name[0].toUpperCase() : 'S';
+
+          // 1. Add My Dashboard to nav links
+          const navLinks = document.getElementById('nav-links');
+          if (navLinks) {
+            const dashLink = document.createElement('a');
+            dashLink.href = '/dashboard.html';
+            dashLink.className = 'hover:text-terracotta transition-colors';
+            dashLink.textContent = 'My Dashboard';
+            navLinks.insertBefore(dashLink, navLinks.children[1]);
+          }
+
+          // 2. Update nav auth buttons with user profile pill & sign out
+          const navAuth = document.getElementById('nav-auth');
+          if (navAuth) {
+            navAuth.innerHTML = `
+              <a href="/dashboard.html" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-canvas-alt border border-canvas-border hover:border-terracotta transition-all" title="${user.name || 'User'} (${user.email || ''})">
+                <div class="w-6 h-6 rounded-full bg-ochre-light border border-ochre-border text-ochre font-extrabold text-xs flex items-center justify-center shrink-0">
+                  ${initial}
+                </div>
+                <span class="text-xs font-bold text-ink max-w-[110px] truncate">
+                  ${displayName}
+                </span>
+              </a>
+              <button id="logout-btn" class="px-2.5 py-1.5 text-xs font-semibold text-ink-muted hover:text-ink transition-colors cursor-pointer" title="Sign out of student account">
+                Sign Out
+              </button>
+            `;
+            document.getElementById('logout-btn')?.addEventListener('click', function() {
+              localStorage.removeItem('htf_token');
+              localStorage.removeItem('htf_user');
+              window.location.reload();
+            });
+          }
+
+          // 3. Update hero button
+          const heroPostBtn = document.getElementById('hero-post-btn');
+          if (heroPostBtn) {
+            heroPostBtn.href = '/browse-teams.html?create=1';
+            heroPostBtn.textContent = '+ Post a Team';
+          }
+        }
+      } catch (e) {
+        console.error('Auth sync error on index.html', e);
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+# Target build outputs
+target/
+backend/target/
+dist/
+frontend/dist/
+
+# Dependencies
+node_modules/
+frontend/node_modules/
+
+# Local Environment & Logs
+*.log
+.env
+.env.local
+
+# IDE & Editor files
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini

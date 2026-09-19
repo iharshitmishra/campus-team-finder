@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Student Profile | Campus Team Finder</title>
+  <link rel="stylesheet" href="/src/style.css">
+</head>
+<body class="bg-canvas text-ink antialiased min-h-screen flex flex-col justify-between selection:bg-terracotta selection:text-white">
+
+  <!-- Simple Header -->
+  <header class="border-b border-canvas-border bg-canvas/95 h-16 flex items-center px-4 sm:px-6">
+    <div class="max-w-6xl mx-auto w-full flex items-center justify-between">
+      <a href="/index.html" class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-lg bg-terracotta text-white flex items-center justify-center font-heading font-black text-lg shadow-xs">
+          H
+        </div>
+        <span class="font-heading font-extrabold text-ink text-lg">Campus Team Finder</span>
+      </a>
+      <a href="/login.html" class="text-xs sm:text-sm font-semibold text-ink-muted hover:text-terracotta transition-colors">
+        Already have an account? Sign In →
+      </a>
+    </div>
+  </header>
+
+  <!-- Register Card Container -->
+  <main class="flex-1 flex items-center justify-center p-4 sm:py-12">
+    <div class="paper-card rounded-2xl max-w-lg w-full p-6 sm:p-10 border border-canvas-border shadow-md">
+      
+      <div class="mb-6">
+        <span class="badge-tag uppercase tracking-wider font-mono text-xs text-terracotta font-bold">
+          Student Registration
+        </span>
+        <h1 class="font-heading font-black text-ink text-2xl sm:text-3xl mt-1">
+          Create Student Profile
+        </h1>
+        <p class="text-xs sm:text-sm text-ink-secondary mt-1">
+          Add your department, academic year, and competencies to match with hackathon squads.
+        </p>
+      </div>
+
+      <!-- Error message container -->
+      <div id="errorBox" class="hidden mb-5 p-4 rounded-xl bg-terracotta-light border border-terracotta-border text-terracotta text-xs sm:text-sm font-semibold"></div>
+
+      <form id="registerForm" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-ink-muted uppercase tracking-wider mb-1.5 font-mono">
+            Full Name *
+          </label>
+          <input
+            type="text"
+            id="name"
+            required
+            placeholder="e.g. Piyush Sharma"
+            class="w-full text-sm px-4 py-2.5 border border-canvas-border rounded-lg bg-canvas focus:outline-none focus:border-terracotta text-ink"
+          />
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-ink-muted uppercase tracking-wider mb-1.5 font-mono">
+            Campus Email Address *
+          </label>
+          <input
+            type="email"
+            id="email"
+            required
+            placeholder="piyush@campus.edu"
+            class="w-full text-sm px-4 py-2.5 border border-canvas-border rounded-lg bg-canvas focus:outline-none focus:border-terracotta text-ink"
+          />
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-ink-muted uppercase tracking-wider mb-1.5 font-mono">
+            Password *
+          </label>
+          <input
+            type="password"
+            id="password"
+            required
+            minlength="4"
+            placeholder="Choose a password (min 4 characters)"
+            class="w-full text-sm px-4 py-2.5 border border-canvas-border rounded-lg bg-canvas focus:outline-none focus:border-terracotta text-ink"
+          />
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-ink-muted uppercase tracking-wider mb-1.5 font-mono">
+              Branch / Department
+            </label>
+            <input
+              type="text"
+              id="branch"
+              placeholder="e.g. Computer Science"
+              class="w-full text-sm px-4 py-2.5 border border-canvas-border rounded-lg bg-canvas focus:outline-none focus:border-terracotta text-ink"
+            />
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-ink-muted uppercase tracking-wider mb-1.5 font-mono">
+              Academic Year
+            </label>
+            <select
+              id="year"
+              class="w-full text-sm px-4 py-2.5 border border-canvas-border rounded-lg bg-canvas focus:outline-none focus:border-terracotta text-ink"
+            >
+              <option value="1st Year">1st Year</option>
+              <option value="2nd Year">2nd Year</option>
+              <option value="3rd Year" selected>3rd Year</option>
+              <option value="4th Year">4th Year</option>
+              <option value="Postgraduate">Postgraduate</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-ink-muted uppercase tracking-wider mb-1.5 font-mono">
+            Key Technical Skills (comma-separated)
+          </label>
+          <input
+            type="text"
+            id="skills"
+            placeholder="React, Python, OpenCV, Node.js, UI/UX"
+            class="w-full text-sm px-4 py-2.5 border border-canvas-border rounded-lg bg-canvas focus:outline-none focus:border-terracotta text-ink"
+          />
+        </div>
+
+        <button
+          type="submit"
+          id="submitBtn"
+          class="w-full py-3 rounded-lg text-sm font-bold bg-terracotta text-white hover:bg-terracotta-hover transition-colors shadow-sm cursor-pointer mt-2"
+        >
+          Create Student Profile & Log In
+        </button>
+      </form>
+
+      <div class="mt-6 text-center text-xs sm:text-sm text-ink-muted">
+        Already have an account?{' '}
+        <a href="/login.html" class="text-terracotta font-bold hover:underline">
+          Sign In
+        </a>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="py-6 text-center text-xs sm:text-sm text-ink-muted border-t border-canvas-border">
+    Campus Hackathon Team Finder • Secure BCrypt + JWT Auth
+  </footer>
+
+  <script>
+    const form = document.getElementById('registerForm');
+    const errBox = document.getElementById('errorBox');
+    const submitBtn = document.getElementById('submitBtn');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errBox.classList.add('hidden');
+      submitBtn.disabled = true;
+      submitBtn.innerText = 'Creating Profile...';
+
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const branch = document.getElementById('branch').value.trim();
+      const year = document.getElementById('year').value;
+      const skillsRaw = document.getElementById('skills').value;
+
+      const skills = skillsRaw
+        .split(',')
+        .map(s => s.trim())
+        .filter(s => s.length > 0);
+
+      try {
+        const res = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, password, branch, year, skills })
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error || 'Registration failed');
+        }
+
+        // Save auth data
+        localStorage.setItem('htf_token', data.token);
+        localStorage.setItem('htf_user', JSON.stringify(data.user));
+
+        // Redirect
+        window.location.href = '/browse-teams.html';
+      } catch (err) {
+        errBox.innerText = err.message;
+        errBox.classList.remove('hidden');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerText = 'Create Student Profile & Log In';
+      }
+    });
+  </script>
+
+</body>
+</html>

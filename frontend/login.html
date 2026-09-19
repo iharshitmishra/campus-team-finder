@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Portal Sign In & Registration | Campus Team Finder</title>
+  <link rel="stylesheet" href="/src/style.css">
+</head>
+<body class="bg-canvas text-ink antialiased min-h-screen flex flex-col justify-between selection:bg-terracotta selection:text-white">
+
+  <!-- Simple Header -->
+  <header class="border-b border-canvas-border bg-canvas/95 h-16 flex items-center px-4 sm:px-6">
+    <div class="max-w-6xl mx-auto w-full flex items-center justify-between">
+      <a href="/index.html" class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-lg bg-terracotta text-white flex items-center justify-center font-heading font-black text-lg shadow-xs">
+          H
+        </div>
+        <span class="font-heading font-extrabold text-ink text-lg">Campus Team Finder</span>
+      </a>
+      <a href="/browse-teams.html" class="text-xs sm:text-sm font-semibold text-ink-muted hover:text-terracotta transition-colors">
+        ← Browse Teams Publicly
+      </a>
+    </div>
+  </header>
+
+  <!-- Auth Container -->
+  <main class="flex-1 flex items-center justify-center p-4 sm:py-12">
+    <div class="paper-card rounded-2xl max-w-lg w-full p-6 sm:p-10 border border-canvas-border shadow-md">
+      
+      <!-- Top Brand Header -->
+      <div class="mb-6">
+        <span class="badge-tag uppercase tracking-wider font-mono text-xs text-terracotta font-bold">
+          Campus Student Access
+        </span>
+        <h1 class="font-heading font-black text-ink text-2xl sm:text-3xl mt-1">
+          Join or Sign In
+        </h1>
+        <p class="text-xs sm:text-sm text-ink-secondary mt-1">
+          Sign in to post team requirements, send join requests, and track your applications.
+        </p>
+      </div>
+
+      <!-- Auth Switcher Tabs -->
+      <div class="flex items-center gap-3 p-1 rounded-xl bg-canvas-alt border border-canvas-border mb-6">
+        <button
+          id="tabSignIn"
+          type="button"
+          onclick="switchTab('signin')"
+          class="flex-1 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all bg-canvas-card text-ink shadow-xs"
+        >
+          Sign In
+        </button>
+        <button
+          id="tabRegister"
+          type="button"
+          onclick="switchTab('register')"
+          class="flex-1 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all text-ink-muted hover:text-ink"
+        >
+          Create New Account
+        </button>
+      </div>
+
+      <!-- Alert Messages -->
+      <div id="errorBox" class="hidden mb-5 p-4 rounded-xl bg-terracotta-light border border-terracotta-border text-terracotta text-xs sm:text-sm font-semibold"></div>
+      <div id="noticeBox" class="hidden mb-5 p-4 rounded-xl bg-ochre-light border border-ochre-border text-ochre text-xs sm:text-sm font-semibold"></div>
+      <div id="successBox" class="hidden mb-5 p-4 rounded-xl bg-sage-light border border-sage-border text-sage text-xs sm:text-sm font-semibold"></div>
+
+      <!-- 1. Sign In Form -->
+      <form id="signInForm" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-ink-muted uppercase tracking-wider mb-1.5 font-mono">
+            Campus Email Address
+          </label>
+          <input
+            type="email"
+            id="loginEmail"
+            required
+            autocomplete="email"
+            placeholder="your.name@campus.edu"
+            class="w-full text-sm px-4 py-3 border border-canvas-border rounded-lg bg-canvas focus:outline-none focus:border-terracotta text-ink placeholder:text-ink-subtle"
+          />
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-ink-muted uppercase tracking-wider mb-1.5 font-mono">
+            Password
+          </label>
+          <input
+            type="password"
+            id="loginPassword"
+            required
+            autocomplete="current-password"
+            placeholder="••••••••"
+            class="w-full text-sm px-4 py-3 border border-canvas-border rounded-lg bg-canvas focus:outline-none focus:border-terracotta text-ink placeholder:text-ink-subtle"
+          />
+        </div>
+
+        <button
+          type="submit"
+          id="loginBtn"
+          class="w-full py-3 rounded-lg text-sm font-bold bg-terracotta text-white hover:bg-terracotta-hover transition-colors shadow-sm cursor-pointer"
+        >
+          Sign In to Student Account
+        </button>
+      </form>
+
+      <!-- 2. Registration Form -->
+      <form id="registerForm" class="hidden space-y-3.5">
+        <div>
+          <label class="block text-xs font-bold text-ink-muted uppercase tracking-wider mb-1 font-mono">
+            Full Name *
+          </label>
+          <input
+            type="text"
+            id="regName"
+            required
+            placeholder="e.g. Piyush Sharma"
+            class="w-full text-sm px-4 py-2.5 border border-canvas-border rounded-lg bg-canvas focus:outline-none focus:border-terracotta text-ink"
+          />
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-ink-muted uppercase tracking-wider mb-1 font-mono">
+            Campus Email Address *
+          </label>
+          <input
+            type="email"
+            id="regEmail"
+            required
+            placeholder="piyush@campus.edu"
+            class="w-full text-sm px-4 py-2.5 border border-canvas-border rounded-lg bg-canvas focus:outline-none focus:border-terracotta text-ink"
+          />
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-ink-muted uppercase tracking-wider mb-1 font-mono">
+            Password *
+          </label>
+          <input
+            type="password"
+            id="regPassword"
+            required
+            minlength="4"
+            placeholder="Choose a password (min 4 characters)"
+            class="w-full text-sm px-4 py-2.5 border border-canvas-border rounded-lg bg-canvas focus:outline-none focus:border-terracotta text-ink"
+          />
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-ink-muted uppercase tracking-wider mb-1 font-mono">
+              Branch / Department
+            </label>
+            <input
+              type="text"
+              id="regBranch"
+              placeholder="e.g. Computer Science"
+              class="w-full text-sm px-4 py-2.5 border border-canvas-border rounded-lg bg-canvas focus:outline-none focus:border-terracotta text-ink"
+            />
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-ink-muted uppercase tracking-wider mb-1 font-mono">
+              Academic Year
+            </label>
+            <select
+              id="regYear"
+              class="w-full text-sm px-4 py-2.5 border border-canvas-border rounded-lg bg-canvas focus:outline-none focus:border-terracotta text-ink"
+            >
+              <option value="1st Year">1st Year</option>
+              <option value="2nd Year">2nd Year</option>
+              <option value="3rd Year" selected>3rd Year</option>
+              <option value="4th Year">4th Year</option>
+              <option value="Postgraduate">Postgraduate</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-ink-muted uppercase tracking-wider mb-1 font-mono">
+            Key Technical Skills (comma-separated)
+          </label>
+          <input
+            type="text"
+            id="regSkills"
+            placeholder="React, Python, OpenCV, Node.js, UI/UX"
+            class="w-full text-sm px-4 py-2.5 border border-canvas-border rounded-lg bg-canvas focus:outline-none focus:border-terracotta text-ink"
+          />
+        </div>
+
+        <button
+          type="submit"
+          id="regBtn"
+          class="w-full py-3 rounded-lg text-sm font-bold bg-terracotta text-white hover:bg-terracotta-hover transition-colors shadow-sm cursor-pointer mt-2"
+        >
+          Create Profile & Log In
+        </button>
+      </form>
+
+      <!-- Pre-seeded Demo Accounts for Quick Evaluation -->
+      <div class="mt-8 pt-5 border-t border-canvas-border/80">
+        <div class="flex items-center justify-between mb-2.5">
+          <span class="text-xs font-bold font-mono text-ink-muted uppercase tracking-wider">
+            Quick Test Demo Accounts:
+          </span>
+          <span class="text-[11px] text-ink-muted">Click to auto-fill</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          <button
+            type="button"
+            onclick="fillDemo('aarav.mehta@campus.edu', 'student123')"
+            class="px-3 py-2 rounded-lg bg-canvas-alt border border-canvas-border hover:border-terracotta text-left transition-all"
+          >
+            <div class="font-bold text-ink text-xs truncate">Aarav Mehta</div>
+            <div class="text-[10px] text-ink-muted truncate font-mono">SIH Team Leader</div>
+          </button>
+
+          <button
+            type="button"
+            onclick="fillDemo('ananya.d@campus.edu', 'student123')"
+            class="px-3 py-2 rounded-lg bg-canvas-alt border border-canvas-border hover:border-terracotta text-left transition-all"
+          >
+            <div class="font-bold text-ink text-xs truncate">Ananya D.</div>
+            <div class="text-[10px] text-ink-muted truncate font-mono">ETHIndia Web3</div>
+          </button>
+
+          <button
+            type="button"
+            onclick="fillDemo('kabir.roy@campus.edu', 'student123')"
+            class="px-3 py-2 rounded-lg bg-canvas-alt border border-canvas-border hover:border-terracotta text-left transition-all"
+          >
+            <div class="font-bold text-ink text-xs truncate">Kabir Roy</div>
+            <div class="text-[10px] text-ink-muted truncate font-mono">CodeFest Architect</div>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Clean Footer -->
+  <footer class="py-6 text-center text-xs sm:text-sm text-ink-muted border-t border-canvas-border">
+    Campus Hackathon Team Finder • Secure BCrypt + JWT Auth • Open Campus Platform
+  </footer>
+
+  <script>
+    function switchTab(mode) {
+      const isSignIn = mode === 'signin';
+      document.getElementById('signInForm').classList.toggle('hidden', !isSignIn);
+      document.getElementById('registerForm').classList.toggle('hidden', isSignIn);
+
+      const tabSignIn = document.getElementById('tabSignIn');
+      const tabRegister = document.getElementById('tabRegister');
+
+      if (isSignIn) {
+        tabSignIn.className = 'flex-1 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all bg-canvas-card text-ink shadow-xs';
+        tabRegister.className = 'flex-1 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all text-ink-muted hover:text-ink';
+      } else {
+        tabRegister.className = 'flex-1 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all bg-canvas-card text-ink shadow-xs';
+        tabSignIn.className = 'flex-1 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all text-ink-muted hover:text-ink';
+      }
+
+      hideAlerts();
+    }
+
+    // Check hash on load (#register)
+    if (window.location.hash === '#register') {
+      switchTab('register');
+    }
+
+    function hideAlerts() {
+      document.getElementById('errorBox').classList.add('hidden');
+      document.getElementById('noticeBox').classList.add('hidden');
+      document.getElementById('successBox').classList.add('hidden');
+    }
+
+    function fillDemo(email, pass) {
+      switchTab('signin');
+      document.getElementById('loginEmail').value = email;
+      document.getElementById('loginPassword').value = pass;
+      hideAlerts();
+    }
+
+    // 1. Handle Sign In
+    const signInForm = document.getElementById('signInForm');
+    signInForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      hideAlerts();
+      const loginBtn = document.getElementById('loginBtn');
+      loginBtn.disabled = true;
+      loginBtn.innerText = 'Verifying credentials...';
+
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          if (data.notFound) {
+            // Prompt to register
+            const errBox = document.getElementById('errorBox');
+            errBox.innerHTML = `
+              <div>${data.error}</div>
+              <button type="button" onclick="prefillRegister('${email}')" class="mt-2 inline-block px-3 py-1 rounded bg-terracotta text-white text-xs font-bold hover:bg-terracotta-hover">
+                Create Account for ${email} →
+              </button>
+            `;
+            errBox.classList.remove('hidden');
+            return;
+          }
+          throw new Error(data.error || 'Login failed');
+        }
+
+        // Save auth data
+        localStorage.setItem('htf_token', data.token);
+        localStorage.setItem('htf_user', JSON.stringify(data.user));
+
+        // Redirect
+        window.location.href = '/browse-teams.html';
+      } catch (err) {
+        const errBox = document.getElementById('errorBox');
+        errBox.innerText = err.message;
+        errBox.classList.remove('hidden');
+      } finally {
+        loginBtn.disabled = false;
+        loginBtn.innerText = 'Sign In to Student Account';
+      }
+    });
+
+    function prefillRegister(email) {
+      switchTab('register');
+      document.getElementById('regEmail').value = email;
+      document.getElementById('regName').focus();
+    }
+
+    // 2. Handle Registration
+    const registerForm = document.getElementById('registerForm');
+    registerForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      hideAlerts();
+      const regBtn = document.getElementById('regBtn');
+      regBtn.disabled = true;
+      regBtn.innerText = 'Creating student profile...';
+
+      const name = document.getElementById('regName').value.trim();
+      const email = document.getElementById('regEmail').value.trim();
+      const password = document.getElementById('regPassword').value;
+      const branch = document.getElementById('regBranch').value.trim();
+      const year = document.getElementById('regYear').value;
+      const skillsRaw = document.getElementById('regSkills').value;
+
+      const skills = skillsRaw
+        .split(',')
+        .map(s => s.trim())
+        .filter(s => s.length > 0);
+
+      try {
+        const res = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, password, branch, year, skills })
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error || 'Registration failed');
+        }
+
+        // Save auth data
+        localStorage.setItem('htf_token', data.token);
+        localStorage.setItem('htf_user', JSON.stringify(data.user));
+
+        // Redirect
+        window.location.href = '/browse-teams.html';
+      } catch (err) {
+        const errBox = document.getElementById('errorBox');
+        errBox.innerText = err.message;
+        errBox.classList.remove('hidden');
+      } finally {
+        regBtn.disabled = false;
+        regBtn.innerText = 'Create Profile & Log In';
+      }
+    });
+  </script>
+
+</body>
+</html>
