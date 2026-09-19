@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Create Student Profile | Campus Team Finder</title>
   <link rel="stylesheet" href="/src/style.css">
+  <script>
+    window.__API_BASE__ = '%VITE_API_BASE%';
+    if (window.__API_BASE__.startsWith('%')) window.__API_BASE__ = '';
+  </script>
 </head>
 <body class="bg-canvas text-ink antialiased min-h-screen flex flex-col justify-between selection:bg-terracotta selection:text-white">
 
@@ -172,7 +176,8 @@
         .filter(s => s.length > 0);
 
       try {
-        const res = await fetch('/api/auth/register', {
+        const apiBase = (window.__API_BASE__ || '').replace(/\/$/, '');
+        const res = await fetch(`${apiBase}/api/auth/register`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ name, email, password, branch, year, skills })
