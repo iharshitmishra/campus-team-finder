@@ -1,6 +1,6 @@
 // Lightweight REST Client for Hackathon Team Finder
 
-const API_BASE = '/api';
+const API_BASE = (import.meta.env.VITE_API_BASE || '').replace(/\/$/, '') + '/api';
 
 export const auth = {
   getToken: () => localStorage.getItem('htf_token'),

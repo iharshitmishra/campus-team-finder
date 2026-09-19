@@ -1,6 +1,8 @@
 # Target build outputs
 target/
 backend/target/
+backend/dependency-reduced-pom.xml
+dependency-reduced-pom.xml
 dist/
 frontend/dist/
 
