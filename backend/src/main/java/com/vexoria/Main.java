@@ -40,6 +40,14 @@ public class Main {
         // Global Auth Filter for protected paths
         app.before("/api/*", AuthFilter::filter);
 
+        // Preflight OPTIONS handler to guarantee HTTP 200 on all routes
+        app.options("/*", ctx -> {
+            ctx.header("Access-Control-Allow-Origin", "*");
+            ctx.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH");
+            ctx.header("Access-Control-Allow-Headers", "Authorization, Content-Type, Accept, Origin, X-Requested-With");
+            ctx.status(200);
+        });
+
         // System Health
         app.get("/api/health", ctx -> ctx.json(Map.of(
                 "status", "UP",
