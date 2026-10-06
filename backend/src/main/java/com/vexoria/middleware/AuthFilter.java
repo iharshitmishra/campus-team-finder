@@ -11,6 +11,11 @@ public class AuthFilter {
         String path = ctx.path();
         String method = ctx.method().name();
 
+        // Browser CORS preflight requests must ALWAYS pass through
+        if ("OPTIONS".equalsIgnoreCase(method)) {
+            return;
+        }
+
         // Check if route requires auth
         boolean needsAuth = false;
 
