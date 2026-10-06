@@ -15,30 +15,81 @@ body {
   font-size: 15px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  background-image: 
+    radial-gradient(circle at 15% 15%, rgba(194, 65, 12, 0.05) 0%, transparent 45%),
+    radial-gradient(circle at 85% 35%, rgba(180, 83, 9, 0.05) 0%, transparent 45%),
+    radial-gradient(circle at 50% 85%, rgba(54, 83, 20, 0.03) 0%, transparent 50%);
+  background-attachment: fixed;
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.025em;
+}
+
+/* Subtle dot grid pattern */
+.bg-grid-pattern {
+  background-size: 24px 24px;
+  background-image: radial-gradient(circle, #D8D1C7 1px, transparent 1px);
 }
 
 /* Card styling with subtle warm tactile elevation */
 .paper-card {
   background-color: #FFFFFF;
-  border: 1px solid #E4DDD3;
-  box-shadow: 0 1px 3px rgba(28, 25, 23, 0.04), 0 4px 12px rgba(28, 25, 23, 0.02);
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid #E7E2DA;
+  box-shadow: 0 1px 3px rgba(28, 25, 23, 0.03), 0 6px 16px rgba(28, 25, 23, 0.02);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .paper-card:hover {
-  border-color: #CEBFB0;
-  box-shadow: 0 4px 8px -2px rgba(28, 25, 23, 0.06), 0 14px 24px -4px rgba(28, 25, 23, 0.06);
-  transform: translateY(-2px);
+  border-color: #D6CBC0;
+  box-shadow: 0 10px 30px -4px rgba(28, 25, 23, 0.08), 0 2px 6px -1px rgba(28, 25, 23, 0.04);
+  transform: translateY(-3px);
 }
 
 /* Clear, comfortable badges */
 .badge-tag {
   font-family: 'Space Mono', monospace;
-  font-size: 0.775rem;
+  font-size: 0.75rem;
   letter-spacing: -0.01em;
+}
+
+/* Custom subtle scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #FAF8F5;
+}
+::-webkit-scrollbar-thumb {
+  background: #D6CBC0;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #B5A89B;
+}
+
+/* Interactive elements */
+.interactive-btn {
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.interactive-btn:active {
+  transform: scale(0.97);
+}
+
+/* Floating animation */
+@keyframes floatSlow {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+@keyframes floatMedium {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(6px); }
+}
+.animate-float-slow {
+  animation: floatSlow 4s ease-in-out infinite;
+}
+.animate-float-medium {
+  animation: floatMedium 3.5s ease-in-out infinite;
 }

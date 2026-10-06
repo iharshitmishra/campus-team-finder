@@ -1,12 +1,16 @@
 import React from 'react';
+import { gsap } from 'gsap';
 
 const POPULAR_SKILLS = [
   'React', 'Python', 'Solidity', 'Java', 'FastAPI', 'Node.js', 
-  'TensorFlow', 'UI/UX Design', 'PostgreSQL', 'Docker'
+  'TensorFlow', 'UI/UX', 'PostgreSQL', 'Docker'
 ];
 
 export default function FilterBar({ filters, onFilterChange, onReset }) {
-  const handleSkillToggle = (skill) => {
+  const handleSkillToggle = (e, skill) => {
+    if (typeof gsap !== 'undefined') {
+      gsap.fromTo(e.currentTarget, { scale: 0.92 }, { scale: 1, duration: 0.25, ease: 'back.out(2)' });
+    }
     onFilterChange({
       ...filters,
       skill: filters.skill === skill ? '' : skill
@@ -16,56 +20,59 @@ export default function FilterBar({ filters, onFilterChange, onReset }) {
   const hasActiveFilters = !!(filters.skill || filters.hackathon || filters.status || filters.search);
 
   return (
-    <div className="bg-canvas-card border border-canvas-border rounded-xl p-5 sm:p-6 mb-8 shadow-xs">
+    <div className="paper-card rounded-2xl p-5 sm:p-6 mb-8 border border-canvas-border">
       
       {/* Search and Filters grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 mb-4">
         <div>
-          <label className="block text-xs font-bold text-ink-muted uppercase tracking-wider mb-1.5 font-mono">
-            Search Project or Problem
+          <label className="block text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-1 font-mono">
+            Search Keyword
           </label>
-          <input
-            type="text"
-            placeholder="Search keywords, e.g. drone, transit, AI..."
-            value={filters.search || ''}
-            onChange={(e) => onFilterChange({ ...filters, search: e.target.value })}
-            className="w-full text-sm px-3.5 py-2.5 border border-canvas-border rounded-lg bg-canvas focus:outline-none focus:border-terracotta transition-colors text-ink placeholder:text-ink-subtle"
-          />
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="e.g. AI, web3, healthcare..."
+              value={filters.search || ''}
+              onChange={(e) => onFilterChange({ ...filters, search: e.target.value })}
+              className="w-full text-sm pl-9 pr-3.5 py-2.5 border border-canvas-border rounded-lg bg-white focus:outline-none focus:border-terracotta transition-colors text-ink placeholder:text-ink-subtle"
+            />
+            <svg className="w-4 h-4 text-ink-muted absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          </div>
         </div>
 
         <div>
-          <label className="block text-xs font-bold text-ink-muted uppercase tracking-wider mb-1.5 font-mono">
-            Hackathon Competition
+          <label className="block text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-1 font-mono">
+            Hackathon Event
           </label>
           <input
             type="text"
-            placeholder="e.g. Smart India Hackathon, ETHIndia..."
+            placeholder="e.g. SIH, ETHIndia..."
             value={filters.hackathon || ''}
             onChange={(e) => onFilterChange({ ...filters, hackathon: e.target.value })}
-            className="w-full text-sm px-3.5 py-2.5 border border-canvas-border rounded-lg bg-canvas focus:outline-none focus:border-terracotta transition-colors text-ink placeholder:text-ink-subtle"
+            className="w-full text-sm px-3.5 py-2.5 border border-canvas-border rounded-lg bg-white focus:outline-none focus:border-terracotta transition-colors text-ink placeholder:text-ink-subtle"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-bold text-ink-muted uppercase tracking-wider mb-1.5 font-mono">
-            Recruitment Status
+          <label className="block text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-1 font-mono">
+            Squad Status
           </label>
           <select
             value={filters.status || ''}
             onChange={(e) => onFilterChange({ ...filters, status: e.target.value })}
-            className="w-full text-sm px-3.5 py-2.5 border border-canvas-border rounded-lg bg-canvas focus:outline-none focus:border-terracotta transition-colors text-ink"
+            className="w-full text-sm px-3.5 py-2.5 border border-canvas-border rounded-lg bg-white focus:outline-none focus:border-terracotta transition-colors text-ink"
           >
-            <option value="">All Teams (Open & Full)</option>
-            <option value="OPEN">Open (Actively Recruiting)</option>
-            <option value="FULL">Full Teams</option>
+            <option value="">All Squads</option>
+            <option value="OPEN">Open (Recruiting)</option>
+            <option value="FULL">Full Squads</option>
           </select>
         </div>
       </div>
 
       {/* Quick Skill Buttons */}
-      <div className="flex flex-wrap items-center gap-2 pt-4 border-t border-canvas-border/80">
-        <span className="text-xs font-bold font-mono text-ink-muted uppercase tracking-wider mr-1">
-          Skill Filter:
+      <div className="flex flex-wrap items-center gap-1.5 pt-3.5 border-t border-canvas-border">
+        <span className="text-[11px] font-bold font-mono text-ink-muted uppercase tracking-wider mr-1">
+          Stack:
         </span>
         {POPULAR_SKILLS.map((skill) => {
           const isSelected = filters.skill === skill;
@@ -73,11 +80,11 @@ export default function FilterBar({ filters, onFilterChange, onReset }) {
             <button
               key={skill}
               type="button"
-              onClick={() => handleSkillToggle(skill)}
-              className={`text-xs font-semibold px-3 py-1.5 rounded-lg transition-all ${
+              onClick={(e) => handleSkillToggle(e, skill)}
+              className={`text-xs font-semibold px-2.5 py-1 rounded-md transition-all cursor-pointer ${
                 isSelected
                   ? 'bg-terracotta text-white shadow-xs'
-                  : 'bg-canvas-alt text-ink-secondary hover:bg-canvas-border border border-canvas-border/60'
+                  : 'bg-canvas-alt text-ink-secondary hover:bg-canvas-border/70 border border-canvas-border/80'
               }`}
             >
               {skill}
@@ -89,9 +96,9 @@ export default function FilterBar({ filters, onFilterChange, onReset }) {
           <button
             type="button"
             onClick={onReset}
-            className="ml-auto text-xs font-bold text-terracotta hover:text-terracotta-hover underline decoration-2 cursor-pointer"
+            className="ml-auto text-xs font-bold text-terracotta hover:underline cursor-pointer py-1"
           >
-            Clear All Filters
+            Reset Filters ×
           </button>
         )}
       </div>

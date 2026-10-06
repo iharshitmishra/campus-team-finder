@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import ReactDOM from 'react-dom/client';
+import { gsap } from 'gsap';
 import Navbar from './components/Navbar';
 import CreateTeamModal from './components/CreateTeamModal';
 import { api, auth } from './api';
@@ -15,6 +16,7 @@ function DashboardApp() {
   const [error, setError] = useState('');
   const [toast, setToast] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const toastRef = useRef(null);
 
   useEffect(() => {
     if (!auth.isLoggedIn()) {
@@ -31,12 +33,10 @@ function DashboardApp() {
       const user = await api.getMe();
       setCurrentUser(user);
 
-      // Fetch all teams and filter for owned teams
       const allTeams = await api.getTeams();
       const myTeams = allTeams.filter(t => t.createdBy === user.id);
       setOwnedTeams(myTeams);
 
-      // Fetch received & sent requests
       const [received, sent] = await Promise.all([
         api.getReceivedRequests(),
         api.getSentRequests()
@@ -44,21 +44,35 @@ function DashboardApp() {
       setReceivedRequests(received);
       setSentRequests(sent);
     } catch (err) {
-      setError(err.message || 'Failed to load dashboard data');
+      setError(err.message || 'Failed to load dashboard');
     } finally {
       setLoading(false);
     }
   };
 
+  // GSAP animation on tab content load
+  useEffect(() => {
+    if (!loading) {
+      gsap.fromTo(
+        '.dash-card',
+        { opacity: 0, y: 15 },
+        { opacity: 1, y: 0, stagger: 0.05, duration: 0.35, ease: 'power2.out' }
+      );
+    }
+  }, [loading, activeTab]);
+
   const showToast = (msg) => {
     setToast(msg);
-    setTimeout(() => setToast(''), 4500);
+    if (toastRef.current) {
+      gsap.fromTo(toastRef.current, { opacity: 0, y: -15 }, { opacity: 1, y: 0, duration: 0.3 });
+    }
+    setTimeout(() => setToast(''), 4000);
   };
 
   const handleRequestDecision = async (requestId, status) => {
     try {
       await api.updateRequestStatus(requestId, status);
-      showToast(status === 'ACCEPTED' ? 'Applicant accepted! Added to your team roster.' : 'Application declined.');
+      showToast(status === 'ACCEPTED' ? 'Applicant accepted to squad!' : 'Application declined.');
       loadData();
     } catch (err) {
       showToast(`Error: ${err.message}`);
@@ -66,15 +80,15 @@ function DashboardApp() {
   };
 
   const handleDeleteTeam = async (teamId) => {
-    if (!confirm('Are you sure you want to delete this team post? All join applications for this team will also be deleted.')) {
+    if (!confirm('Are you sure you want to delete this squad?')) {
       return;
     }
     try {
       await api.deleteTeam(teamId);
-      showToast('Team post deleted successfully.');
+      showToast('Squad deleted.');
       loadData();
     } catch (err) {
-      showToast(`Error deleting team: ${err.message}`);
+      showToast(`Error deleting squad: ${err.message}`);
     }
   };
 
@@ -82,7 +96,7 @@ function DashboardApp() {
     const nextStatus = team.status === 'OPEN' ? 'CLOSED' : 'OPEN';
     try {
       await api.updateTeam(team.id, { status: nextStatus });
-      showToast(`Team status changed to ${nextStatus}.`);
+      showToast(`Squad status updated to ${nextStatus}.`);
       loadData();
     } catch (err) {
       showToast(`Error: ${err.message}`);
@@ -94,103 +108,103 @@ function DashboardApp() {
       <Navbar onOpenCreateModal={() => setShowCreateModal(true)} />
 
       {toast && (
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 w-full pt-5">
-          <div className="p-4 bg-sage-light border border-sage-border text-sage rounded-xl text-sm font-semibold flex items-center justify-between shadow-xs">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 w-full pt-4">
+          <div ref={toastRef} className="p-3.5 bg-sage-light border border-sage-border text-sage rounded-xl text-xs sm:text-sm font-semibold flex items-center justify-between shadow-xs">
             <span>✓ {toast}</span>
-            <button onClick={() => setToast('')} className="text-sage text-lg font-bold">×</button>
+            <button onClick={() => setToast('')} className="text-sage text-base font-bold cursor-pointer">×</button>
           </div>
         </div>
       )}
 
-      <main className="flex-1 max-w-6xl mx-auto px-4 sm:px-6 py-10 w-full">
+      <main className="flex-1 max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-10 w-full">
         
-        {/* Profile Banner */}
+        {/* Profile Card */}
         {currentUser && (
-          <div className="paper-card rounded-2xl p-6 sm:p-8 mb-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="dash-card paper-card rounded-2xl p-6 sm:p-7 mb-8 flex flex-col md:flex-row md:items-center justify-between gap-6 border border-canvas-border">
             <div>
-              <div className="flex items-center gap-4 mb-2">
-                <div className="w-14 h-14 rounded-2xl bg-ochre-light border border-ochre-border text-ochre font-heading font-extrabold text-2xl flex items-center justify-center shadow-xs">
+              <div className="flex items-center gap-3.5 mb-2">
+                <div className="w-12 h-12 rounded-xl bg-ochre-light border border-ochre-border text-ochre font-heading font-black text-xl flex items-center justify-center shadow-xs">
                   {currentUser.name ? currentUser.name[0].toUpperCase() : 'S'}
                 </div>
                 <div>
-                  <h1 className="font-heading font-extrabold text-ink text-2xl sm:text-3xl">
+                  <h1 className="font-heading font-black text-ink text-2xl">
                     {currentUser.name}
                   </h1>
-                  <p className="text-sm text-ink-secondary mt-0.5">
-                    {currentUser.email} • {currentUser.branch || 'Campus Student'} {currentUser.year ? `(${currentUser.year})` : ''}
+                  <p className="text-xs text-ink-secondary mt-0.5">
+                    {currentUser.email} • {currentUser.branch || 'Student'} {currentUser.year ? `(${currentUser.year})` : ''}
                   </p>
                 </div>
               </div>
 
               {/* Skills */}
-              <div className="flex flex-wrap items-center gap-2 mt-4">
-                <span className="text-xs font-bold font-mono text-ink-muted uppercase tracking-wider mr-1">My Skills:</span>
+              <div className="flex flex-wrap items-center gap-1.5 mt-3">
+                <span className="text-[11px] font-bold font-mono text-ink-muted uppercase tracking-wider mr-1">Skills:</span>
                 {currentUser.skills && currentUser.skills.length > 0 ? (
                   currentUser.skills.map((s, idx) => (
-                    <span key={idx} className="text-xs font-semibold px-3 py-1 rounded-md bg-canvas-alt text-ink border border-canvas-border">
+                    <span key={idx} className="text-xs font-semibold px-2.5 py-0.5 rounded-md bg-canvas-alt text-ink border border-canvas-border">
                       {s}
                     </span>
                   ))
                 ) : (
-                  <span className="text-xs text-ink-muted italic">No skills listed</span>
+                  <span className="text-xs text-ink-muted italic">No skills added</span>
                 )}
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2.5">
               <button
                 onClick={() => setShowCreateModal(true)}
-                className="px-5 py-3 rounded-lg text-sm font-bold bg-terracotta text-white hover:bg-terracotta-hover transition-colors shadow-sm"
+                className="interactive-btn px-4 py-2.5 rounded-lg text-xs sm:text-sm font-bold bg-terracotta text-white hover:bg-terracotta-hover transition-colors shadow-xs cursor-pointer whitespace-nowrap"
               >
-                + Post a Team Requirement
+                + Post Squad Requirement
               </button>
             </div>
           </div>
         )}
 
-        {/* Dashboard Navigation Tabs */}
-        <div className="flex items-center gap-6 border-b border-canvas-border mb-8">
+        {/* Navigation Tabs */}
+        <div className="flex items-center gap-4 border-b border-canvas-border mb-6">
           <button
             onClick={() => setActiveTab('owned')}
-            className={`pb-3 text-sm sm:text-base font-bold tracking-tight transition-colors border-b-2 ${
+            className={`pb-2.5 text-xs sm:text-sm font-bold transition-all border-b-2 cursor-pointer ${
               activeTab === 'owned'
                 ? 'border-terracotta text-terracotta'
                 : 'border-transparent text-ink-muted hover:text-ink'
             }`}
           >
-            Teams You Lead & Review Applicants ({ownedTeams.length})
+            Squads You Lead ({ownedTeams.length})
           </button>
 
           <button
             onClick={() => setActiveTab('sent')}
-            className={`pb-3 text-sm sm:text-base font-bold tracking-tight transition-colors border-b-2 ${
+            className={`pb-2.5 text-xs sm:text-sm font-bold transition-all border-b-2 cursor-pointer ${
               activeTab === 'sent'
                 ? 'border-terracotta text-terracotta'
                 : 'border-transparent text-ink-muted hover:text-ink'
             }`}
           >
-            My Sent Applications ({sentRequests.length})
+            Sent Applications ({sentRequests.length})
           </button>
         </div>
 
-        {/* Tab 1: Teams You Lead & Review Applicants */}
+        {/* Tab 1: Squads You Lead */}
         {activeTab === 'owned' && (
-          <div className="space-y-8">
+          <div className="space-y-6">
             {loading ? (
-              <div className="py-16 text-center text-sm font-mono text-ink-muted">Loading your teams...</div>
+              <div className="py-16 text-center text-xs font-mono text-ink-muted">Loading squads...</div>
             ) : ownedTeams.length === 0 ? (
-              <div className="paper-card rounded-xl p-12 text-center">
-                <h3 className="font-heading font-bold text-ink text-2xl mb-2">
-                  You haven't posted any hackathon teams yet
+              <div className="dash-card paper-card rounded-2xl p-10 text-center border border-canvas-border">
+                <h3 className="font-heading font-bold text-ink text-xl mb-1">
+                  You haven't posted any squads yet
                 </h3>
-                <p className="text-sm text-ink-muted mb-6 max-w-md mx-auto">
-                  Planning to compete in SIH, ETHIndia, or an upcoming campus codefest? Post your team requirement and invite teammates.
+                <p className="text-xs sm:text-sm text-ink-muted mb-5">
+                  Post a squad requirement to recruit teammates for upcoming hackathons.
                 </p>
                 <button
                   onClick={() => setShowCreateModal(true)}
-                  className="px-5 py-2.5 rounded-lg text-sm font-bold bg-terracotta text-white hover:bg-terracotta-hover"
+                  className="interactive-btn px-4 py-2 rounded-lg text-xs sm:text-sm font-bold bg-terracotta text-white hover:bg-terracotta-hover cursor-pointer"
                 >
-                  Create Team Requirement
+                  + Post Squad
                 </button>
               </div>
             ) : (
@@ -199,15 +213,15 @@ function DashboardApp() {
                 const pendingRequests = teamRequests.filter(r => r.status === 'PENDING');
 
                 return (
-                  <div key={team.id} className="paper-card rounded-xl p-6 sm:p-8">
-                    {/* Team Header */}
-                    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 pb-5 border-b border-canvas-border">
+                  <div key={team.id} className="dash-card paper-card rounded-2xl p-5 sm:p-6 border border-canvas-border">
+                    {/* Header */}
+                    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 pb-4 border-b border-canvas-border">
                       <div>
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="badge-tag uppercase font-bold px-2.5 py-0.5 rounded bg-ochre-light text-ochre border border-ochre-border text-xs">
+                        <div className="flex items-center gap-2 mb-1.5">
+                          <span className="badge-tag uppercase font-bold px-2 py-0.5 rounded bg-ochre-light text-ochre border border-ochre-border text-xs">
                             {team.hackathonName}
                           </span>
-                          <span className={`badge-tag uppercase font-bold px-2.5 py-0.5 rounded text-xs ${
+                          <span className={`badge-tag uppercase font-bold px-2 py-0.5 rounded text-xs ${
                             team.status === 'OPEN'
                               ? 'bg-sage-light text-sage border border-sage-border'
                               : 'bg-canvas-alt text-ink-muted border border-canvas-border'
@@ -215,76 +229,71 @@ function DashboardApp() {
                             {team.status}
                           </span>
                         </div>
-                        <h2 className="font-heading font-extrabold text-ink text-2xl">
+                        <h2 className="font-heading font-black text-ink text-xl">
                           {team.title}
                         </h2>
-                        <p className="text-sm text-ink-muted mt-1 font-medium">
+                        <p className="text-xs text-ink-muted mt-0.5 font-medium">
                           {team.currentMembers?.length || 1} of {team.teamSize} spots filled
                         </p>
                       </div>
 
-                      <div className="flex items-center gap-2.5">
+                      <div className="flex items-center gap-2">
                         <button
                           onClick={() => handleToggleStatus(team)}
-                          className="px-3.5 py-2 text-xs sm:text-sm border border-canvas-border rounded-lg text-ink font-semibold hover:bg-canvas-alt"
+                          className="px-3 py-1.5 text-xs border border-canvas-border rounded-lg text-ink font-semibold hover:bg-canvas-alt cursor-pointer transition-colors"
                         >
-                          {team.status === 'OPEN' ? 'Close Recruitment' : 'Re-open Team'}
+                          {team.status === 'OPEN' ? 'Close Squad' : 'Reopen Squad'}
                         </button>
                         <button
                           onClick={() => handleDeleteTeam(team.id)}
-                          className="px-3.5 py-2 text-xs sm:text-sm border border-terracotta-border text-terracotta hover:bg-terracotta-light rounded-lg font-semibold"
+                          className="px-3 py-1.5 text-xs border border-terracotta-border text-terracotta hover:bg-terracotta-light rounded-lg font-semibold cursor-pointer transition-colors"
                         >
-                          Delete Team
+                          Delete
                         </button>
                       </div>
                     </div>
 
-                    {/* Team Roster */}
-                    <div className="py-5 border-b border-canvas-border">
-                      <h4 className="text-xs font-mono uppercase text-ink-muted mb-3 font-bold tracking-wider">
-                        Current Team Roster ({team.currentMembers?.length || 1} of {team.teamSize})
+                    {/* Roster */}
+                    <div className="py-4 border-b border-canvas-border">
+                      <h4 className="text-[11px] font-mono uppercase text-ink-muted mb-2.5 font-bold tracking-wider">
+                        Squad Roster ({team.currentMembers?.length || 1}/{team.teamSize})
                       </h4>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
                         {team.currentMembers?.map((m, idx) => (
-                          <div key={idx} className="p-3.5 rounded-lg bg-canvas-alt border border-canvas-border text-sm flex items-center justify-between">
-                            <span className="font-bold text-ink">{m.name}</span>
-                            <span className="text-xs font-mono text-ink-muted bg-canvas-card px-2 py-0.5 rounded border border-canvas-border">{m.role || 'Member'}</span>
+                          <div key={idx} className="p-2.5 rounded-lg bg-canvas-alt border border-canvas-border text-xs flex items-center justify-between">
+                            <span className="font-bold text-ink truncate">{m.name}</span>
+                            <span className="text-[10px] font-mono text-ink-muted bg-white px-1.5 py-0.5 rounded border border-canvas-border">{m.role || 'Member'}</span>
                           </div>
                         ))}
                       </div>
                     </div>
 
-                    {/* Incoming Join Requests */}
-                    <div className="pt-5">
-                      <div className="flex items-center justify-between mb-4">
-                        <div>
-                          <h4 className="text-xs font-mono uppercase text-ink-muted font-bold tracking-wider">
-                            Incoming Student Applications ({teamRequests.length})
-                          </h4>
-                          <p className="text-xs text-ink-muted mt-0.5">
-                            Applicants are only added to your roster when you click <strong>Accept Member</strong>.
-                          </p>
-                        </div>
+                    {/* Applications */}
+                    <div className="pt-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <h4 className="text-[11px] font-mono uppercase text-ink-muted font-bold tracking-wider">
+                          Incoming Pitches ({teamRequests.length})
+                        </h4>
                         {pendingRequests.length > 0 && (
-                          <span className="badge-tag px-3 py-1 rounded-full bg-ochre-light text-ochre font-bold text-xs">
-                            {pendingRequests.length} pending your review
+                          <span className="badge-tag px-2.5 py-0.5 rounded-full bg-ochre-light text-ochre font-bold text-xs">
+                            {pendingRequests.length} pending
                           </span>
                         )}
                       </div>
 
                       {teamRequests.length === 0 ? (
-                        <p className="text-sm text-ink-muted italic py-2">
-                          No student applications received yet for this team.
+                        <p className="text-xs text-ink-muted italic py-1">
+                          No applications received yet.
                         </p>
                       ) : (
-                        <div className="space-y-3.5">
+                        <div className="space-y-2.5">
                           {teamRequests.map((req) => (
-                            <div key={req.id} className="p-5 rounded-xl border border-canvas-border bg-canvas text-sm flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+                            <div key={req.id} className="p-4 rounded-xl border border-canvas-border bg-white text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                               <div className="max-w-xl">
-                                <div className="flex items-center gap-2.5 mb-1.5">
-                                  <span className="font-extrabold text-ink text-base">{req.userName}</span>
-                                  <span className="text-ink-muted text-xs">({req.userBranch}, {req.userYear})</span>
-                                  <span className={`badge-tag uppercase px-2 py-0.5 rounded font-mono text-[11px] font-bold ${
+                                <div className="flex items-center gap-2 mb-1">
+                                  <span className="font-bold text-ink text-sm">{req.userName}</span>
+                                  <span className="text-ink-muted text-[11px]">({req.userBranch}, {req.userYear})</span>
+                                  <span className={`badge-tag uppercase px-1.5 py-0.5 rounded font-mono text-[10px] font-bold ${
                                     req.status === 'ACCEPTED' ? 'bg-sage-light text-sage border border-sage-border' :
                                     req.status === 'REJECTED' ? 'bg-terracotta-light text-terracotta border border-terracotta-border' :
                                     'bg-ochre-light text-ochre border border-ochre-border'
@@ -292,13 +301,13 @@ function DashboardApp() {
                                     {req.status}
                                   </span>
                                 </div>
-                                <p className="text-ink-secondary leading-relaxed mb-3 italic">
-                                  "{req.message || 'No message provided.'}"
+                                <p className="text-ink-secondary leading-relaxed mb-2 italic">
+                                  "{req.message || 'No pitch note provided.'}"
                                 </p>
                                 {req.userSkills && req.userSkills.length > 0 && (
-                                  <div className="flex flex-wrap gap-1.5">
+                                  <div className="flex flex-wrap gap-1">
                                     {req.userSkills.map((s, idx) => (
-                                      <span key={idx} className="badge-tag px-2 py-0.5 rounded bg-canvas-card border border-canvas-border text-xs text-ink-secondary font-medium">
+                                      <span key={idx} className="badge-tag px-1.5 py-0.5 rounded bg-canvas-alt border border-canvas-border text-[10px] text-ink-secondary">
                                         {s}
                                       </span>
                                     ))}
@@ -308,23 +317,23 @@ function DashboardApp() {
 
                               {/* Decision buttons */}
                               {req.status === 'PENDING' ? (
-                                <div className="flex items-center gap-2.5 shrink-0">
+                                <div className="flex items-center gap-2 shrink-0">
                                   <button
                                     onClick={() => handleRequestDecision(req.id, 'ACCEPTED')}
-                                    className="px-4 py-2 rounded-lg bg-sage text-white text-xs sm:text-sm font-bold hover:bg-sage/90 shadow-xs"
+                                    className="interactive-btn px-3 py-1.5 rounded-lg bg-sage text-white text-xs font-bold hover:bg-sage/90 shadow-xs cursor-pointer"
                                   >
-                                    Accept Member
+                                    Accept
                                   </button>
                                   <button
                                     onClick={() => handleRequestDecision(req.id, 'REJECTED')}
-                                    className="px-4 py-2 rounded-lg border border-canvas-border text-ink-secondary text-xs sm:text-sm font-bold hover:text-terracotta hover:border-terracotta"
+                                    className="px-3 py-1.5 rounded-lg border border-canvas-border text-ink-secondary text-xs font-bold hover:text-terracotta hover:border-terracotta cursor-pointer transition-colors"
                                   >
                                     Decline
                                   </button>
                                 </div>
                               ) : (
                                 <div className="text-xs font-mono font-bold text-ink-muted shrink-0">
-                                  {req.status === 'ACCEPTED' ? '✓ Added to Roster' : '✗ Declined'}
+                                  {req.status === 'ACCEPTED' ? '✓ On Roster' : '✗ Declined'}
                                 </div>
                               )}
                             </div>
@@ -340,68 +349,68 @@ function DashboardApp() {
           </div>
         )}
 
-        {/* Tab 2: My Sent Applications */}
+        {/* Tab 2: Sent Applications */}
         {activeTab === 'sent' && (
           <div>
             {loading ? (
-              <div className="py-16 text-center text-sm font-mono text-ink-muted">Loading your applications...</div>
+              <div className="py-16 text-center text-xs font-mono text-ink-muted">Loading applications...</div>
             ) : sentRequests.length === 0 ? (
-              <div className="paper-card rounded-xl p-12 text-center">
-                <h3 className="font-heading font-bold text-ink text-2xl mb-2">
-                  You haven't applied to any teams yet
+              <div className="dash-card paper-card rounded-2xl p-10 text-center border border-canvas-border">
+                <h3 className="font-heading font-bold text-ink text-xl mb-1">
+                  You haven't applied to any squads yet
                 </h3>
-                <p className="text-sm text-ink-muted mb-6">
-                  Browse open teams on the campus directory and pitch your skills to team leaders.
+                <p className="text-xs sm:text-sm text-ink-muted mb-5">
+                  Explore active squads on the campus hub and pitch your skills to team leads.
                 </p>
                 <a
                   href="/browse-teams.html"
-                  className="px-5 py-2.5 rounded-lg text-sm font-bold bg-terracotta text-white hover:bg-terracotta-hover inline-block"
+                  className="interactive-btn px-4 py-2 rounded-lg text-xs sm:text-sm font-bold bg-terracotta text-white hover:bg-terracotta-hover inline-block"
                 >
-                  Browse Open Teams
+                  Explore Squads
                 </a>
               </div>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-3.5">
                 {sentRequests.map((req) => (
-                  <div key={req.id} className="paper-card rounded-xl p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+                  <div key={req.id} className="dash-card paper-card rounded-2xl p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border border-canvas-border">
                     <div>
-                      <div className="flex items-center gap-2 mb-1.5">
-                        <span className="badge-tag uppercase px-2.5 py-0.5 rounded bg-ochre-light text-ochre border border-ochre-border text-xs font-bold">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="badge-tag uppercase px-2 py-0.5 rounded bg-ochre-light text-ochre border border-ochre-border text-xs font-bold">
                           {req.hackathonName}
                         </span>
-                        <span className={`badge-tag uppercase px-2.5 py-0.5 rounded text-xs font-bold ${
+                        <span className={`badge-tag uppercase px-2 py-0.5 rounded text-xs font-bold ${
                           req.status === 'ACCEPTED' ? 'bg-sage-light text-sage border border-sage-border' :
                           req.status === 'REJECTED' ? 'bg-terracotta-light text-terracotta border border-terracotta-border' :
                           'bg-ochre-light text-ochre border border-ochre-border'
                         }`}>
-                          {req.status === 'PENDING' ? '⏳ PENDING REVIEW' : req.status}
+                          {req.status === 'PENDING' ? '⏳ Under Review' : req.status}
                         </span>
                       </div>
-                      <h3 className="font-heading font-bold text-ink text-xl">
+                      <h3 className="font-heading font-bold text-ink text-lg">
                         {req.teamTitle}
                       </h3>
-                      <p className="text-xs text-ink-muted mt-1">
+                      <p className="text-[11px] text-ink-muted mt-0.5">
                         Applied on {new Date(req.createdAt).toLocaleDateString()}
                       </p>
-                      <p className="text-sm text-ink-secondary mt-2.5 max-w-xl italic leading-relaxed">
+                      <p className="text-xs sm:text-sm text-ink-secondary mt-2 max-w-xl italic leading-relaxed">
                         "{req.message}"
                       </p>
                     </div>
 
                     <div className="shrink-0 text-left sm:text-right">
                       {req.status === 'ACCEPTED' && (
-                        <div className="p-3 rounded-lg bg-sage-light border border-sage-border text-sage font-bold text-sm">
-                          ✓ Accepted by Team Leader! You are on the roster.
+                        <div className="p-2.5 rounded-lg bg-sage-light border border-sage-border text-sage font-bold text-xs">
+                          ✓ Accepted! You are on the squad roster.
                         </div>
                       )}
                       {req.status === 'PENDING' && (
-                        <div className="text-xs font-mono font-bold text-ochre bg-ochre-light px-3 py-1.5 rounded-md border border-ochre-border">
-                          Awaiting Team Leader Decision
+                        <div className="text-xs font-mono font-bold text-ochre bg-ochre-light px-2.5 py-1 rounded-md border border-ochre-border">
+                          Awaiting Decision
                         </div>
                       )}
                       {req.status === 'REJECTED' && (
                         <div className="text-xs font-mono font-semibold text-ink-muted">
-                          Application declined by leader
+                          Declined by lead
                         </div>
                       )}
                     </div>
@@ -418,14 +427,14 @@ function DashboardApp() {
         <CreateTeamModal
           onClose={() => setShowCreateModal(false)}
           onSuccess={() => {
-            showToast('Team posted successfully!');
+            showToast('Squad posted successfully!');
             loadData();
           }}
         />
       )}
 
-      <footer className="border-t border-canvas-border py-8 mt-16 bg-canvas-alt text-center text-xs sm:text-sm text-ink-muted">
-        Campus Hackathon Team Finder • Built by students, for students • Connect, Collaborate, Compete
+      <footer className="border-t border-canvas-border py-6 mt-12 bg-canvas-alt text-center text-xs text-ink-muted">
+        HackMate • Connect, Pitch & Compete
       </footer>
     </div>
   );
