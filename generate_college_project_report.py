@@ -6,7 +6,6 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import (
     SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak, KeepTogether, HRFlowable, Image
 )
-from reportlab.pdfgen import canvas
 
 # University & College Color Palette
 C_PRIMARY = HexColor("#1E3A8A")       # Navy University Blue
@@ -16,50 +15,6 @@ C_INK_MUTED = HexColor("#4B5563")     # Formal Gray
 C_BG_CARD = HexColor("#F9FAFB")       # Clean Card Background
 C_BORDER = HexColor("#D1D5DB")        # Light Border
 C_WHITE = HexColor("#FFFFFF")
-
-class AcademicNumberedCanvas(canvas.Canvas):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._saved_page_states = []
-
-    def showPage(self):
-        self._saved_page_states.append(dict(self.__dict__))
-        self._startPage()
-
-    def save(self):
-        num_pages = len(self._saved_page_states)
-        for state in self._saved_page_states:
-            self.__dict__.update(state)
-            self.draw_page_decorations(num_pages)
-            super().showPage()
-        super().save()
-
-    def draw_page_decorations(self, page_count):
-        # Suppress headers/footers on preliminary & certificate pages (Pages 1 to 4)
-        if self._pageNumber <= 4:
-            return
-
-        self.saveState()
-        page_width, page_height = A4
-
-        # Header for body pages
-        self.setFont("Helvetica", 8)
-        self.setFillColor(C_INK_MUTED)
-        self.drawString(54, page_height - 36, "HackMate — Campus Hackathon Team Finder")
-        self.drawRightString(page_width - 54, page_height - 36, "Department of Computer Engineering, DMCE")
-
-        self.setStrokeColor(C_BORDER)
-        self.setLineWidth(0.5)
-        self.line(54, page_height - 40, page_width - 54, page_height - 40)
-
-        # Footer for body pages
-        self.line(54, 45, page_width - 54, 45)
-        self.drawString(54, 32, "Datta Meghe College of Engineering, Airoli • University of Mumbai")
-        # Body page number relative to content start (Page 1 of 2, Page 2 of 2)
-        content_page = self._pageNumber - 4
-        total_content_pages = page_count - 4
-        self.drawRightString(page_width - 54, 32, f"Page {content_page} of {total_content_pages}")
-        self.restoreState()
 
 def build_pdf(filename):
     doc = SimpleDocTemplate(
@@ -73,7 +28,7 @@ def build_pdf(filename):
 
     styles = getSampleStyleSheet()
 
-    # Academic Typography Styles
+    # Academic Typography Styles (No Italics)
     title_style = ParagraphStyle(
         'CoverTitle',
         fontName='Helvetica-Bold',
@@ -317,7 +272,7 @@ def build_pdf(filename):
         [Paragraph("&nbsp;&nbsp;&nbsp;&nbsp;1.2 Motivation", tbl_cell), Paragraph("1", ParagraphStyle('TOCP', fontName='Helvetica', fontSize=8.5, alignment=2, textColor=C_INK))],
         [Paragraph("&nbsp;&nbsp;&nbsp;&nbsp;1.3 Problem Statement and Objectives", tbl_cell), Paragraph("1", ParagraphStyle('TOCP', fontName='Helvetica', fontSize=8.5, alignment=2, textColor=C_INK))],
         [Paragraph("<b>2. Proposed System</b>", tbl_cell_bold), Paragraph("<b>1</b>", ParagraphStyle('TOCP', fontName='Helvetica-Bold', fontSize=8.5, alignment=2, textColor=C_INK))],
-        [Paragraph("&nbsp;&nbsp;&nbsp;&nbsp;2.1 Process Model (Agile Scrum Model)", tbl_cell), Paragraph("1", ParagraphStyle('TOCP', fontName='Helvetica', fontSize=8.5, alignment=2, textColor=C_INK))],
+        [Paragraph("&nbsp;&nbsp;&nbsp;&nbsp;2.1 Process Model (Agile Model)", tbl_cell), Paragraph("1", ParagraphStyle('TOCP', fontName='Helvetica', fontSize=8.5, alignment=2, textColor=C_INK))],
         [Paragraph("&nbsp;&nbsp;&nbsp;&nbsp;2.2 Proposed Methodology / Architecture", tbl_cell), Paragraph("1", ParagraphStyle('TOCP', fontName='Helvetica', fontSize=8.5, alignment=2, textColor=C_INK))],
         [Paragraph("&nbsp;&nbsp;&nbsp;&nbsp;2.3 Details of Hardware and Software", tbl_cell), Paragraph("2", ParagraphStyle('TOCP', fontName='Helvetica', fontSize=8.5, alignment=2, textColor=C_INK))],
         [Paragraph("<b>3. Implementation and Results</b>", tbl_cell_bold), Paragraph("<b>2</b>", ParagraphStyle('TOCP', fontName='Helvetica-Bold', fontSize=8.5, alignment=2, textColor=C_INK))],
@@ -337,84 +292,83 @@ def build_pdf(filename):
     story.append(toc_table)
     story.append(Spacer(1, 14))
 
-    # Preliminary section: Abstract & Abbreviations
+    # Preliminary section: Abstract & Abbreviations (No Italics, Simple Terms)
     story.append(Paragraph("<b>Abstract</b>", ParagraphStyle('AbsH', fontName='Helvetica-Bold', fontSize=10, textColor=C_PRIMARY, spaceAfter=3)))
     story.append(Paragraph(
-        "<b>HackMate</b> is an authenticated collegiate web platform designed to streamline hackathon team discovery and squad formation. "
-        "Traditional student communication channels (e.g. WhatsApp, Discord) suffer from unread message saturation, unverified skill claims, and last-minute ghosting. "
-        "HackMate introduces a decoupled multi-tier architecture using <b>React 18</b> with <b>Tailwind CSS</b> on the frontend, a high-performance <b>Java 17 Javalin REST</b> API backend, "
-        "and <b>MongoDB</b> for polymorphic document persistence. Featuring stateless <b>JWT (HMAC256)</b> security, <b>BCrypt</b> password hashing, real-time multi-criteria filtering, "
-        "and 1-click applicant review workflows, HackMate reduces squad formation time from several days to under 24 hours while ensuring transparent team capacity tracking.",
+        "<b>HackMate</b> is a web platform designed to help college students find teammates for hackathons and coding competitions. "
+        "Traditionally, students search for teammates in WhatsApp and Discord groups, which leads to unread messages, unverified skills, and last-minute dropouts. "
+        "HackMate solves this by providing a clean web platform built with <b>React</b> for the user interface, <b>Java</b> for backend REST APIs, and <b>MongoDB</b> for database storage. "
+        "With secure user login, real-time skill filtering, and a simple application dashboard, HackMate makes team formation fast, organized, and reliable.",
         body_style
     ))
     story.append(Spacer(1, 6))
 
     story.append(Paragraph("<b>List of Abbreviations & Figures:</b>", ParagraphStyle('AbbH', fontName='Helvetica-Bold', fontSize=9.5, textColor=C_PRIMARY, spaceAfter=2)))
-    story.append(Paragraph("• <b>API:</b> Application Programming Interface | <b>JWT:</b> JSON Web Token (HMAC256) | <b>REST:</b> Representational State Transfer", body_style))
-    story.append(Paragraph("• <b>SIH:</b> Smart India Hackathon | <b>UI/UX:</b> User Interface & Experience | <b>HMR:</b> Hot Module Replacement", body_style))
-    story.append(Paragraph("• <i>Figure 1: HackMate Decoupled Multi-Tier Architecture</i> | <i>Figure 2: Squad Application & Atomic Roster Lock Flow</i>", body_style))
+    story.append(Paragraph("• <b>API:</b> Application Programming Interface | <b>JWT:</b> JSON Web Token | <b>REST:</b> Web Service Architecture", body_style))
+    story.append(Paragraph("• <b>SIH:</b> Smart India Hackathon | <b>UI/UX:</b> User Interface & Design | <b>DB:</b> Database", body_style))
+    story.append(Paragraph("• Figure 1: System Architecture Diagram | Figure 2: Team Application Workflow", body_style))
 
     story.append(PageBreak())
 
     # =============================================================
-    # CONTENT PAGE 1 (PAGE 1 OF 2)
+    # CONTENT PAGE 1 (PAGE 1 OF 2) — Clean, No Running Header/Footer
     # =============================================================
     story.append(Paragraph("1. Introduction", h1_style))
-    story.append(Paragraph("<b>1.1 Introduction:</b> HackMate is an engineering solution designed to solve the multidisciplinary team formation bottleneck in collegiate hackathons (e.g. Smart India Hackathon, ETHIndia, Annual CodeFests). It bridges students across Computer, IT, AI/DS, and Electronics branches through structured skill matching and transparent roster management.", body_style))
-    story.append(Paragraph("<b>1.2 Motivation:</b> In university environments, students form hackathon squads via informal messaging channels. This creates three critical failures: (1) <i>Information Drowning</i> where squad requests get buried under hundreds of messages, (2) <i>Skill Mismatches</i> where unverified capabilities lead to project failure on competition day, and (3) <i>Roster Ambiguity</i> where applicants have no visibility into team capacity.", body_style))
+    story.append(Paragraph("<b>1.1 Introduction:</b> HackMate is a campus web application developed to help students across different engineering branches (Computer, IT, AI/DS, and Electronics) connect and form teams for hackathons like Smart India Hackathon, ETHIndia, and annual college code fests.", body_style))
+    story.append(Paragraph("<b>1.2 Motivation:</b> Currently, students look for teammates through WhatsApp groups and informal chats. This causes three main problems: (1) Squad requests get lost in message floods, (2) Students struggle to verify skills before the event, and (3) There is no clear way to track how many open spots remain on a team.", body_style))
     story.append(Paragraph("<b>1.3 Problem Statement and Objectives:</b><br/>"
-                           "• <b>Problem:</b> Absence of a centralized, authenticated platform for campus developers to discover complementary teammates by technical stack.<br/>"
-                           "• <b>Objectives:</b> (1) Deliver real-time multi-criteria filtering (by skill, hackathon, and open slots), (2) Enforce secure student authentication via BCrypt and JWT, (3) Provide team leads with a 1-click applicant management dashboard, and (4) Automate atomic roster locking upon team saturation.", body_style))
+                           "• <b>Problem:</b> Lack of an organized platform for students to find teammates based on technical skills.<br/>"
+                           "• <b>Objectives:</b> (1) Provide real-time filtering by programming skill and hackathon name, (2) Implement secure student login and registration, (3) Provide team leaders with a simple dashboard to accept or decline applicants, and (4) Automatically update team capacity when spots are filled.", body_style))
     story.append(Spacer(1, 4))
 
     story.append(Paragraph("2. Proposed System", h1_style))
-    story.append(Paragraph("<b>2.1 Process Model (Agile Scrum Model):</b> The system was engineered following the Agile Scrum development model across 4 iterative sprint cycles: (Sprint 1) MongoDB schema modeling and Javalin REST endpoints, (Sprint 2) BCrypt password hashing and JWT AuthFilter middleware, (Sprint 3) React 18 component islands and Tailwind CSS responsive views, and (Sprint 4) GSAP micro-animations and integration testing.", body_style))
+    story.append(Paragraph("<b>2.1 Process Model (Agile Model):</b> The project was developed using the Agile model in 4 simple stages: (1) Database schema design and backend API development, (2) User authentication and security, (3) Frontend user interface and responsive screens, and (4) Integration and testing.", body_style))
     story.append(Spacer(1, 2))
 
     story.append(Paragraph("<b>2.2 Proposed Methodology / Architecture:</b>", h2_style))
-    story.append(Paragraph("The system adopts a decoupled <b>Client-Server REST Architecture</b> consisting of three primary layers:", body_style))
+    story.append(Paragraph("The system is organized into three standard layers:", body_style))
 
-    # Architecture Table
+    # Architecture Table (Clean, Generic Terms)
     arch_data = [
-        [Paragraph("Architectural Tier", tbl_header), Paragraph("Technologies", tbl_header), Paragraph("Functional Responsibility", tbl_header)],
-        [Paragraph("<b>Presentation Tier (Client)</b>", tbl_cell_bold),
-         Paragraph("React 18, Vite 5, Tailwind CSS 3.4, GSAP 3.12", tbl_cell),
-         Paragraph("Multi-page MPA islands, state-driven search/filter, modal pitch forms, tactile UI.", tbl_cell)],
-        [Paragraph("<b>Application Tier (Server)</b>", tbl_cell_bold),
-         Paragraph("Java 17 LTS, Javalin 5.6.3 (Embedded Jetty), Jackson 2.16", tbl_cell),
-         Paragraph("Stateless REST API routing, AuthFilter guard, capacity validation, CORS management.", tbl_cell)],
-        [Paragraph("<b>Persistence Tier (Database)</b>", tbl_cell_bold),
-         Paragraph("MongoDB 7.0+, Java Sync Driver 4.11, mongo-java-server", tbl_cell),
-         Paragraph("BSON document persistence, polymorphic skills arrays, atomic $push roster mutations.", tbl_cell)]
+        [Paragraph("System Layer", tbl_header), Paragraph("Technology Used", tbl_header), Paragraph("Role in Project", tbl_header)],
+        [Paragraph("<b>Frontend (User Interface)</b>", tbl_cell_bold),
+         Paragraph("React, HTML5, Tailwind CSS, GSAP", tbl_cell),
+         Paragraph("Displays team cards, search filters, application forms, and dashboard.", tbl_cell)],
+        [Paragraph("<b>Backend (Server API)</b>", tbl_cell_bold),
+         Paragraph("Java 17, Javalin REST Framework", tbl_cell),
+         Paragraph("Handles web requests, user authentication, team management, and business logic.", tbl_cell)],
+        [Paragraph("<b>Database (Storage)</b>", tbl_cell_bold),
+         Paragraph("MongoDB Database", tbl_cell),
+         Paragraph("Stores student profiles, team requirements, and application requests.", tbl_cell)]
     ]
-    arch_table = Table(arch_data, colWidths=[120, 150, 210])
+    arch_table = Table(arch_data, colWidths=[130, 140, 210])
     arch_table.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, 0), C_PRIMARY),
         ('ROWBACKGROUNDS', (0, 1), (-1, -1), [C_WHITE, C_BG_CARD]),
         ('BOX', (0, 0), (-1, -1), 0.6, C_BORDER),
         ('INNERGRID', (0, 0), (-1, -1), 0.4, C_BORDER),
-        ('TOPPADDING', (0, 0), (-1, -1), 3),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
+        ('TOPPADDING', (0, 0), (-1, -1), 3.5),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 3.5),
     ]))
     story.append(arch_table)
     story.append(Spacer(1, 4))
 
-    story.append(Paragraph("<b>Why MongoDB was Chosen over Relational SQL (MySQL):</b> Hackathon team listings require polymorphic, arbitrary arrays of technical skills (e.g. <code>['React', 'PyTorch', 'Solidity']</code>) and embedded member objects. In MongoDB, an entire squad is persisted in a single document and queried via BSON regex filters. In MySQL, this would require 4 normalized tables (<code>teams</code>, <code>skills</code>, <code>team_skills</code>, <code>team_members</code>) joined on every query, adding relational join overhead without structural benefit.", body_style))
+    story.append(Paragraph("<b>Why MongoDB was Chosen over SQL (MySQL):</b> In hackathons, every team listing needs a dynamic list of skills (e.g. React, Python, Solidity) and team members. In MongoDB, an entire team and its skills are stored together in one simple record. In traditional SQL databases, this would require 4 separate tables joined together on every search query, which adds extra database complexity.", body_style))
 
     story.append(PageBreak())
 
     # =============================================================
-    # CONTENT PAGE 2 (PAGE 2 OF 2)
+    # CONTENT PAGE 2 (PAGE 2 OF 2) — Clean, No Running Header/Footer
     # =============================================================
     story.append(Paragraph("2.3 Details of Hardware and Software Requirements", h2_style))
     
     hw_sw_data = [
-        [Paragraph("Category", tbl_header), Paragraph("Specification / Tool", tbl_header), Paragraph("Minimum Version / Requirement", tbl_header)],
-        [Paragraph("<b>Operating System</b>", tbl_cell_bold), Paragraph("Windows 10/11, Linux (Ubuntu), macOS", tbl_cell), Paragraph("64-bit Architecture", tbl_cell)],
-        [Paragraph("<b>Hardware Specs</b>", tbl_cell_bold), Paragraph("Intel Core i3 / AMD Ryzen 3, 8GB RAM, 500MB Disk", tbl_cell), Paragraph("Dual-Core 2.0 GHz or higher", tbl_cell)],
-        [Paragraph("<b>Runtime & Backend</b>", tbl_cell_bold), Paragraph("Java Development Kit (JDK 17 LTS), Maven 3.9.6", tbl_cell), Paragraph("Javalin 5.6.3, Jackson 2.16.1", tbl_cell)],
-        [Paragraph("<b>Frontend & UI</b>", tbl_cell_bold), Paragraph("Node.js 18+, Vite 5.1.4, React 18.2.0, Tailwind 3.4", tbl_cell), Paragraph("GSAP 3.12.5 Animation Library", tbl_cell)],
-        [Paragraph("<b>Database & Security</b>", tbl_cell_bold), Paragraph("MongoDB 7.0 / mongo-java-server, Auth0 java-jwt", tbl_cell), Paragraph("HMAC256 Tokens, jBCrypt 0.4", tbl_cell)]
+        [Paragraph("Category", tbl_header), Paragraph("Software / Tool", tbl_header), Paragraph("Specification", tbl_header)],
+        [Paragraph("<b>Operating System</b>", tbl_cell_bold), Paragraph("Windows 10 / 11, Linux, macOS", tbl_cell), Paragraph("Standard 64-bit OS", tbl_cell)],
+        [Paragraph("<b>Hardware Specs</b>", tbl_cell_bold), Paragraph("Intel Core i3 / AMD Ryzen 3, 8GB RAM", tbl_cell), Paragraph("Standard Laptop / Desktop", tbl_cell)],
+        [Paragraph("<b>Backend Platform</b>", tbl_cell_bold), Paragraph("Java (JDK 17), Maven Build Tool", tbl_cell), Paragraph("Javalin REST Framework", tbl_cell)],
+        [Paragraph("<b>Frontend Platform</b>", tbl_cell_bold), Paragraph("React, Tailwind CSS, Vite", tbl_cell), Paragraph("Modern Web Browser Support", tbl_cell)],
+        [Paragraph("<b>Database & Auth</b>", tbl_cell_bold), Paragraph("MongoDB Database, JWT Tokens", tbl_cell), Paragraph("Secure Password Hashing", tbl_cell)]
     ]
     hw_sw_table = Table(hw_sw_data, colWidths=[110, 210, 160])
     hw_sw_table.setStyle(TableStyle([
@@ -422,32 +376,37 @@ def build_pdf(filename):
         ('ROWBACKGROUNDS', (0, 1), (-1, -1), [C_WHITE, C_BG_CARD]),
         ('BOX', (0, 0), (-1, -1), 0.6, C_BORDER),
         ('INNERGRID', (0, 0), (-1, -1), 0.4, C_BORDER),
-        ('TOPPADDING', (0, 0), (-1, -1), 2.5),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 2.5),
+        ('TOPPADDING', (0, 0), (-1, -1), 3),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
     ]))
     story.append(hw_sw_table)
     story.append(Spacer(1, 4))
 
     story.append(Paragraph("3. Implementation and Results", h1_style))
     story.append(Paragraph("<b>3.1 Implementation Modules:</b><br/>"
-                           "• <b>Module 1: Authentication & Security Engine:</b> Implemented in <code>AuthController.java</code> and <code>JwtUtil.java</code>. Student passwords are salted with factor 10 using BCrypt before MongoDB persistence. User sessions are verified statelessly via HMAC256-signed JWTs, intercepted by Javalin's <code>AuthFilter</code>.<br/>"
-                           "• <b>Module 2: Squad Discovery & Multi-Criteria Filtering:</b> Implemented in <code>TeamController.java</code> and <code>FilterBar.jsx</code>. Executes dynamic case-insensitive BSON regex queries across needed skills, hackathon competitions, and open roster slots.<br/>"
-                           "• <b>Module 3: Application Pitch & Atomic Roster Locking:</b> Implemented in <code>RequestController.java</code>. Enables students to submit tailored pitches with GitHub links. Squad leaders review pitches in their dashboard; accepting a member executes an atomic MongoDB <code>$push</code> to the <code>currentMembers</code> array, automatically updating status to <code>FULL</code> upon saturation.<br/>"
-                           "• <b>Module 4: Responsive UI & Animation Islands:</b> Built using React 18, Tailwind CSS, and GSAP timelines in <code>index.html</code>, <code>main.jsx</code>, and <code>dashboard.jsx</code> with dynamic roster capacity progress bars and tactile paper elevation.", body_style))
+                           "• <b>Module 1: User Authentication & Security:</b> Allows students to register and sign in securely. Passwords are encrypted before being saved, and user sessions are managed using secure login tokens (JWT).<br/>"
+                           "• <b>Module 2: Team Discovery & Search Filtering:</b> Allows students to browse open teams and filter them by programming skills (React, Python, OpenCV), competition name, and open spot count.<br/>"
+                           "• <b>Module 3: Application Pitch & Roster Management:</b> Students can send application pitches with their background and GitHub links. Team leaders can review pitches in their dashboard and accept members, which automatically updates the team size.<br/>"
+                           "• <b>Module 4: User Interface & Dashboard:</b> Built using React and Tailwind CSS with clean cards, status badges, and smooth animations for a user-friendly experience.", body_style))
     story.append(Spacer(1, 3))
 
     story.append(Paragraph("<b>3.2 Results with Output Verification:</b>", h2_style))
-    story.append(Paragraph("The platform was thoroughly evaluated across functional test cases: (1) <b>Cold Startup:</b> Sub-second initialization (<1s) on Javalin embedded Jetty, (2) <b>Filtering Latency:</b> <15ms average query response time across 50+ polymorphic team records, (3) <b>Roster Concurrency:</b> Atomic <code>$push</code> operations successfully prevented race conditions when filling the final squad spot, and (4) <b>Zero-Config Evaluator Testing:</b> Verified automated startup using embedded in-memory <code>mongo-java-server</code> fallback.", body_style))
+    story.append(Paragraph("The platform was tested and verified with the following results: (1) <b>Fast Performance:</b> The backend starts up in less than 1 second and handles team searches instantly, (2) <b>Accurate Search:</b> Filtering by skills and hackathons returns exact matching teams without delay, (3) <b>Roster Accuracy:</b> Teams are automatically marked as FULL once all open spots are filled, and (4) <b>Reliable Testing:</b> Pre-configured demo student accounts allow easy testing during evaluation.", body_style))
     story.append(Spacer(1, 4))
 
     story.append(Paragraph("4. Conclusion and Future Work", h1_style))
-    story.append(Paragraph("<b>4.1 Conclusion:</b> HackMate successfully replaces unstructured social messaging channels with an authenticated, structured collegiate squad discovery ecosystem. By combining a lightweight Java 17 REST backend with React component islands and MongoDB document persistence, the platform guarantees sub-second response times, verified student identities, and transparent roster locking.", body_style))
-    story.append(Paragraph("<b>4.2 Future Work:</b> Future enhancements include: (1) Real-time squad chat via WebSocket protocols, (2) Automated team GitHub repository and Discord channel provisioning via Webhooks, and (3) AI-driven semantic role matching based on student GitHub commit history and project portfolios.", body_style))
+    story.append(Paragraph("<b>4.1 Conclusion:</b> HackMate provides a simple, structured, and effective way for college students to find hackathon teammates. By using React for the interface, Java for web services, and MongoDB for data storage, the application makes team building organized, fast, and transparent.", body_style))
+    story.append(Paragraph("<b>4.2 Future Work:</b> In the future, the platform can be expanded with: (1) In-app team chat messaging, (2) Automatic creation of GitHub repositories for accepted teams, and (3) Automated skill recommendations based on past student projects.", body_style))
 
-    # Build Document
-    doc.build(story, canvasmaker=AcademicNumberedCanvas)
-    print(f"Successfully generated DMCE Mini Project Report at: {filename}")
+    # Build Document without running headers/footers
+    doc.build(story)
+    print(f"Successfully generated clean DMCE Mini Project Report at: {filename}")
 
 if __name__ == "__main__":
     out_pdf = r"c:\Projects\campus-team-finder\HackMate_Mini_Project_Report_DMCE.pdf"
-    build_pdf(out_pdf)
+    fallback_pdf = r"c:\Projects\campus-team-finder\HackMate_Mini_Project_Report.pdf"
+    try:
+        build_pdf(out_pdf)
+    except PermissionError:
+        print(f"Notice: {out_pdf} is locked by a viewer. Generating to {fallback_pdf}")
+        build_pdf(fallback_pdf)
